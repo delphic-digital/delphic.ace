@@ -1,29 +1,25 @@
 // https://developers.google.com/analytics/devguides/collection/gajs/eventTrackerGuide
 
-;(function(DELPHIC, MINI) {
-	
-	var $ = MINI.$, $$=MINI.$$, EE=MINI.EE;
+;(function(DELPHIC, $) {
 
-	MINI.M.prototype.trackMe = function(opts) { 
+	$.fn.trackMe = function(opts) {
 
-		var elms = $(this);
+		$(this).click(function(e){
+			e.preventDefault();
 
-		elms.on('click', function(e, index, selectedIndex){
-			var $this = $(elms[index]);
-
-			var href = $this.get('@href'),
-			    target = $this.get('@target'),
-			    category = $this.get('%track-event'),
-			    action = $this.get('%track-action'),
-			    label = $this.get('%track-label'),
-			    value = $this.get('%track-value'),
-			    nonInteraction = $this.get('%track-nonInteraction');
+			var $this = $(this),
+			    href = $this.attr('href'),
+			    target = $this.attr('target'),
+			    category = $this.attr('track-event'),
+			    action = $this.attr('track-action'),
+			    label = $this.attr('track-label'),
+			    value = $this.attr('track-value'),
+			    nonInteraction = $this.attr('track-nonInteraction');
 
 			action = action?action:'Click';
 			label = label?label:window.location.pathname;
 
-			_gaq.push(['_trackEvent', category, action, label, value, nonInteraction]);
-
+			ga('send', 'event', category, action, label, value, nonInteraction);
 
 			if(href){
 				setTimeout(function() {
@@ -38,5 +34,7 @@
 		});
 
 	}
-	
-} (DELPHIC = window.DELPHIC || {}, MINI));
+
+	$('[data-track-event]').trackMe();
+
+} (DELPHIC = window.DELPHIC || {}, jQuery));
