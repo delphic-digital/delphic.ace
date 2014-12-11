@@ -1,9 +1,9 @@
 delphic.gatracking
 ==================
 
-Google Analytics tracking module
+Google Analytics tracking module.
 
-Include delphic.gatracking.js
+Include delphic.gatracking.js after including jQuery/Zepto
 
 ## Acceptable attributes:
 
