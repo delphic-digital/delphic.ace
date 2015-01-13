@@ -1,6 +1,6 @@
 /* ==========================================================
  *
- * Delphic.gatracking.js
+ * Delphic.ace.js
  * Version: 2.0.0 (Tues, 13 Jan 2015)
  * Delphic Digital
  *

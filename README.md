@@ -3,10 +3,10 @@ Ace
 
 Google Analytics tracking module.
 
-Include delphic.gatracking.js after including jQuery/Zepto.
+Include delphic.ace.js after including jQuery/Zepto.
 
 ```html
-<script src="delphic.gatracking.js"> </script>
+<script src="delphic.ace.js"> </script>
 ```
 
 Initialize:
