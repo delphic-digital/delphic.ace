@@ -30,4 +30,8 @@ Only category and action values are required.
 
 ### Why ace?
 
+Because Ace the Bat-Hound is good at tracking.
+
+![Ace the Bat-Hound](http://static.comicvine.com/uploads/scale_small/1/14487/1288836-ace.jpg)
+
 http://www.comicvine.com/ace-the-bat-hound/4005-31302/
