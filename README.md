@@ -19,7 +19,7 @@ Initialize:
 
 ## Usage:
 
-Add a *data-delphic-event* attribute to the link you want track.
+Add a *data-delphic-event* attribute to the link you want to track.
 Possible values: `data-track-event="category, action, label, value, noninteraction"`
 
 Only category and action values are required.
