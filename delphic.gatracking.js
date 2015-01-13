@@ -1,65 +1,114 @@
-// https://developers.google.com/analytics/devguides/collection/gajs/eventTrackerGuide
+/* ==========================================================
+ *
+ * Delphic.gatracking.js
+ * Version: 2.0.0 (Tues, 13 Jan 2015)
+ * Delphic Digital
+ *
+ * ========================================================== */
+
+
+//https://developers.google.com/analytics/devguides/collection/analyticsjs/events#implementation
+//https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference
+//http://www.comicvine.com/ace-the-bat-hound/4005-31302/
 
 ;(function(DELPHIC, $) {
+	var $body,
+	    initialized = false,
+	    options = {
+		  	delay: 100,
+		  	extensions: {},
+	    };
 
-	var debug = {};
-	debug.log = function(){};
-	if (window.console && window.console.log)
-		debug.log = function(msg) { window.console.log(msg); };
+	function _init(opts) {
+		if (!initialized) {
+			initialized = true;
+			$body = $("body");
+			$.extend(options, opts || {});
 
-	$.fn.getEvents = function() {
-		if (typeof($._data) == 'function') {
-			return $._data(this.get(0), 'events') || {};
-		} else if (typeof(this.data) == 'function') { // jQuery version < 1.7.?
-			return this.data('events') || {};
+			$body.on("click.ace", "*[data-delphic-event]", _track);
+
+			// Extentions for future use
+			for (var i in $.ace.extensions) {
+				if ($.ace.extensions.hasOwnProperty(i)) {
+					$.ace.extensions[i]( options.extensions[i] || null );
+				}
+			}
 		}
-		return {};
-	};
+	}
 
+	function _track(e) {
+		// Universal Analytics
+		if (typeof window.ga === "function") {
+			e.preventDefault();
 
-	$.fn.trackMe = function() {
+			var $target = $(this),
+				url = $target.attr("href"),
+				data = $target.data("delphic-event").split(",");
 
-		var $this = $(this),
-		    preventDefaultClick;
-
-		//Check for already assigned click events.
-		clickEvents = $this.getEvents().click;
-
-		$this.click(function(e){
-			if(!clickEvents)
-				e.preventDefault();
-			var $this = $(this),
-			    href = $this.attr('href'),
-			    target = $this.attr('target'),
-			    category = $this.data('track-event'),
-			    action = $this.data('track-action'),
-			    label = $this.data('track-label'),
-			    value = $this.data('track-value'),
-			    nonInteraction = $this.data('track-nonInteraction');
-
-			action = action?action:'Click';
-			label = label?label:window.location.pathname;
-
-			debug.log(">>>>>>>>>>> " + "'send','event',"+ category+","+ action+","+ label+","+ value+","+ nonInteraction);
-			ga('send', 'event', category, action, label, value, nonInteraction);
-
-
-			if(!clickEvents){
-				if(href){
-					setTimeout(function() {
-						if(target == '_blank'){
-							window.open(href);
-						}else{
-							document.location.href = href;
-						}
-					}, 80)
+			for (var i in data) {
+				if (data.hasOwnProperty(i)) {
+					data[i] = $.trim(data[i]);
 				}
 			}
 
-		});
-
+			// Push data
+			_push(data[0], data[1], (data[2] || url), data[3], data[4], $target);
+		}
 	}
 
-	$('[data-track-event]').trackMe();
+	function _push(category, action, label, value, noninteraction, $target) {
+		if (typeof window.ga === "function") {
+			var event = {
+				"hitType": "event",
+				"location": window.location,
+				"title": window.document.title
+			};
+			if (category) {
+				event["eventCategory"] = category;
+			}
+			if (action) {
+				event["eventAction"] = action;
+			}
+			if (label) {
+				event["eventLabel"] = label;
+			}
+			if (value) {
+				event["eventValue"] = value;
+			}
+			if (noninteraction) {
+				event["nonInteraction"] = noninteraction;
+			}
 
-} (DELPHIC = window.DELPHIC || {}, jQuery));
+			if (typeof $target !== "undefined") {
+				var href = (typeof $target[0].href !== "undefined") ? $target[0].href : "",
+				    url = (href.indexOf(":") < 0) ? window.location.protocol + "//" + window.location.hostname + "/" + href : href;
+
+				if (href !== "") {
+					// Check window target
+					if ($target.attr("target")) {
+						window.open(url, $target.attr("target"));
+					} else {
+						event["hitCallback"] = function() {
+							document.location = url;
+						};
+					}
+				}
+			}
+
+			DEBUG && console.info(event);
+
+			window.ga("send", event);
+		}
+	}
+
+	$.ace = function() {
+		if (arguments.length && typeof arguments[0] !== "object") {
+			_push.apply(this, arguments);
+		} else {
+			_init.apply(this, arguments);
+		}
+	};
+
+	$.ace.extensions = {};
+
+} (DELPHIC = window.DELPHIC || {}, window.jQuery || window.Zepto));

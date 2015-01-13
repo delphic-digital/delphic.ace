@@ -3,16 +3,30 @@ delphic.gatracking
 
 Google Analytics tracking module.
 
-Include delphic.gatracking.js after including jQuery/Zepto
-
-## Acceptable attributes:
-
-* data-track-event
-* data-track-action
-* data-track-label
-* data-track-value
-* data-track-nonInteraction
+Include delphic.gatracking.js after including jQuery/Zepto.
 
 ```html
-<a href="http://hackaday.com/" data-track-event="Body Navigation" data-track-label="Hackaday homepage link">HACKADAY</a>
+<script src="delphic.gatracking.js"> </script>
 ```
+
+Initialize:
+
+```html
+<script>
+	$.ace();
+</script>
+```
+
+## Usage:
+
+Add a *data-delphic-event* attribute to the link you want track. Possible values: `data-track-event="category, action, label, value, noninteraction"`
+
+Only category and action values are required.
+
+```html
+<a href="http://www.hackaday.com" data-delphic-event="External Link, Click, Exited site with external link">HACKADAY</a>
+```
+
+### Why ace?
+
+http://www.comicvine.com/ace-the-bat-hound/4005-31302/
