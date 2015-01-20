@@ -27,7 +27,7 @@
 
 			$body.on("click.ace", "*[data-delphic-event]", _track);
 
-			// Extentions for future use
+			// Extensions
 			for (var i in $.ace.extensions) {
 				if ($.ace.extensions.hasOwnProperty(i)) {
 					$.ace.extensions[i]( options.extensions[i] || null );
