@@ -103,6 +103,7 @@
 
 	$.ace = function() {
 		if (arguments.length && typeof arguments[0] !== "object") {
+			console.log('manual track')
 			_push.apply(this, arguments);
 		} else {
 			_init.apply(this, arguments);
