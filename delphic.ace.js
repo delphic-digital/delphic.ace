@@ -25,7 +25,7 @@
 			$body = $("body");
 			$.extend(options, opts || {});
 
-			$body.on("click.ace", "*[data-delphic-event]", _track);
+			$body.on("click.ace", "*[data-track-event]", _track);
 
 			// Extensions
 			for (var i in $.ace.extensions) {
@@ -43,7 +43,7 @@
 
 			var $target = $(this),
 				url = $target.attr("href"),
-				data = $target.data("delphic-event").split(",");
+				data = $target.data("track-event").split(",");
 
 			for (var i in data) {
 				if (data.hasOwnProperty(i)) {

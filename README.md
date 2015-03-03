@@ -25,7 +25,7 @@ Possible values: `data-track-event="category, action, label, value, noninteracti
 Only category and action values are required.
 
 ```html
-<a href="http://www.hackaday.com" data-delphic-event="External Link, Click, Exited site with external link">HACKADAY</a>
+<a href="http://www.hackaday.com" data-track-event="External Link, Click, Exited site with external link">HACKADAY</a>
 ```
 
 ### Why ace?
