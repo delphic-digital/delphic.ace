@@ -11,7 +11,7 @@ Include delphic.ace.js after including jQuery/Zepto.
 
 ## Usage:
 
-Add a *data-delphic-event* attribute to the link you want to track.
+Add a *data-track-event* attribute to the link you want to track.
 Possible values: `data-track-event="category, action, label, value, noninteraction"`
 
 Only category and action values are required.
