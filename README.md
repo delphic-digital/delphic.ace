@@ -9,14 +9,6 @@ Include delphic.ace.js after including jQuery/Zepto.
 <script src="delphic.ace.js"> </script>
 ```
 
-Initialize:
-
-```html
-<script>
-	$.ace();
-</script>
-```
-
 ## Usage:
 
 Add a *data-delphic-event* attribute to the link you want to track.
@@ -26,6 +18,14 @@ Only category and action values are required.
 
 ```html
 <a href="http://www.hackaday.com" data-track-event="External Link, Click, Exited site with external link">HACKADAY</a>
+```
+
+You can also initialize a manual call to GA with the following parameters:
+
+```html
+<script>
+	$.ace(category, action, label, value, noninteraction);
+</script>
 ```
 
 ### Why ace?
