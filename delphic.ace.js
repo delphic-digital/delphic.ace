@@ -20,23 +20,32 @@
 
 	Ace.prototype = {
 		init: function($elms,options){
-			//this.$elms = $elms;
 			this.attach($elms,options);
 		},
 
 		attach: function($elms, options){
 			var self = this;
-
-			$elms.on('click.ace', function(){
-				var $this = $(this),
-				    data = self.getData($this, options);
-
-				self.push(data, $this);
-			});
+			if(typeof $elms === 'object'){
+				$($elms).on('click.ace', function(e){
+					self.click(options,this)
+				});
+			}else if(typeof $elms === 'string'){
+				$(document).on('click.ace', $elms , function(e){
+					self.click(options, this)
+				});
+			}
 
 		},
 
-		getData: function(elm, options){
+		click: function(options, elm){
+			var self = this;
+			var $this = $(elm),
+				    data = self.getData(options, $this);
+
+				self.push(data, $this);
+		},
+
+		getData: function(options, elm){
 			var $target = $(elm),
 				url = $target.attr("href"),
 				data = $target.data("track-event") || options;
@@ -48,14 +57,17 @@
 					data[i] = $.trim(data[i]);
 				}
 			}
-
 			return data;
 		},
 
 		push: function(data, $target){
+
 			//category, action, label, value, noninteraction, $target
-			var url = $target.attr("href"),
-			    category = data[0],
+			if($target) {
+				var url = $target.attr("href")
+			}
+
+			var category = data[0],
 			    action = data[1],
 			    label = data[2] || url,
 			    value = data[3],
@@ -112,11 +124,16 @@
 		}
 	}
 
-	var myAce = new Ace($("*[data-track-event]"));
+	var myAce = new Ace("*[data-track-event]");
 
-	$.fn.ace = function ( options ) {
+	$.ace = function (options) {
+		var data = myAce.getData(options);
+		myAce.push(data);
+	}
+
+	$.fn.ace = function (options) {
 		return this.each(function () {
-				myAce.attach( $(this), options );
+				myAce.attach(this, options );
 		});
 	};
 
