@@ -14,41 +14,44 @@
 (function(DELPHIC, $) {
 	"use strict";
 
-	function Ace($elms,options) {
-		this.init($elms,options);
+	function Ace(selector,options) {
+		this.init(selector,options);
 	}
 
 	Ace.prototype = {
-		init: function($elms,options){
-			this.attach($elms,options);
+		init: function(selector,options){
+			this.attach(selector,options);
 		},
 
-		attach: function($elms, options){
+		attach: function(selector, options){
 			var self = this;
-			if(typeof $elms === 'object'){
-				$($elms).on('click.ace', function(e){
-					self.click(options,this)
+			if(typeof selector === 'object'){
+				$(selector).on('click.ace', function(e){
+					self.eventClick(options,this)
 				});
-			}else if(typeof $elms === 'string'){
-				$(document).on('click.ace', $elms , function(e){
-					self.click(options, this)
+			}else if(typeof selector === 'string'){
+				$(document).on('click.ace', selector , function(e){
+					self.eventClick(options,this)
 				});
 			}
 
 		},
 
-		click: function(options, elm){
+		eventClick: function(options, target){
 			var self = this;
-			var $this = $(elm),
-				    data = self.getData(options, $this);
+			var $target = $(target),
+				    data = self.getData(options, $target);
 
-				self.push(data, $this);
+				self.push(data, $target);
 		},
 
-		getData: function(options, elm){
-			var $target = $(elm),
-				url = $target.attr("href"),
+		getData: function(options, $target){
+			var data;
+			if($target){
 				data = $target.data("track-event") || options;
+			}else{
+				data=options;
+			}
 
 			data = data.split(",");
 
@@ -63,8 +66,12 @@
 		push: function(data, $target){
 
 			//category, action, label, value, noninteraction, $target
+			var url;
+
 			if($target) {
-				var url = $target.attr("href")
+				url = $target.attr("href");
+			}else{
+				url = '';
 			}
 
 			var category = data[0],
