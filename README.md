@@ -12,7 +12,8 @@ Include delphic.ace.js after including jQuery.
 ## Usage:
 
 Add a *data-track-event* attribute to the link you want to track.
-Possible values: `data-track-event="category, action, label, value, noninteraction"`
+Possible values:
+`data-track-event="category, action, label, value, noninteraction"`
 
 Only category and action values are required. If no label is supplied, the target's href will be used as label, if it exists.
 
