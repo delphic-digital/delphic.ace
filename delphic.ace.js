@@ -1,7 +1,7 @@
 /* ==========================================================
  *
  * Delphic.ace.js
- * Version: 2.0.0 (Tues, 13 Jan 2015)
+ * Version: 3.0.0 (Thurs, 9 Apr 2015)
  * Delphic Digital
  *
  * ========================================================== */
@@ -11,105 +11,139 @@
 //https://developers.google.com/analytics/devguides/collection/analyticsjs/field-reference
 //http://www.comicvine.com/ace-the-bat-hound/4005-31302/
 
-;(function(DELPHIC, $) {
-	var $body,
-	    initialized = false,
-	    options = {
-		  	delay: 100,
-		  	extensions: {},
-	    };
+(function(DELPHIC, $) {
+	"use strict";
 
-	function _init(opts) {
-		if (!initialized) {
-			initialized = true;
-			$body = $("body");
-			$.extend(options, opts || {});
-
-			$body.on("click.ace", "*[data-track-event]", _track);
-
-			// Extensions
-			for (var i in $.ace.extensions) {
-				if ($.ace.extensions.hasOwnProperty(i)) {
-					$.ace.extensions[i]( options.extensions[i] || null );
-				}
-			}
-		}
+	function Ace(selector,options) {
+		this.init(selector,options);
 	}
 
-	function _track(e) {
-		// Universal Analytics
-		if (typeof window.ga === "function") {
-			e.preventDefault();
+	Ace.prototype = {
+		init: function(selector,options){
+			this.attach(selector,options);
+		},
 
-			var $target = $(this),
-				url = $target.attr("href"),
-				data = $target.data("track-event").split(",");
+		attach: function(selector, options){
+			var self = this;
+			if(typeof selector === 'object'){
+				$(selector).on('click.ace', function(e){
+					self.eventClick(options,this)
+				});
+			}else if(typeof selector === 'string'){
+				$(document).on('click.ace', selector , function(e){
+					self.eventClick(options,this)
+				});
+			}
+
+		},
+
+		eventClick: function(options, target){
+			var self = this;
+			var $target = $(target),
+				    data = self.getData(options, $target);
+
+				self.push(data, $target);
+		},
+
+		getData: function(options, $target){
+			var data;
+			if($target){
+				data = $target.data("track-event") || options;
+			}else{
+				data=options;
+			}
+
+			data = data.split(",");
 
 			for (var i in data) {
 				if (data.hasOwnProperty(i)) {
 					data[i] = $.trim(data[i]);
 				}
 			}
+			return data;
+		},
 
-			// Push data
-			_push(data[0], data[1], (data[2] || url), data[3], data[4], $target);
-		}
-	}
+		push: function(data, $target){
 
-	function _push(category, action, label, value, noninteraction, $target) {
-		if (typeof window.ga === "function") {
-			var event = {
-				"hitType": "event",
-				"location": window.location,
-				"title": window.document.title
-			};
-			if (category) {
-				event["eventCategory"] = category;
-			}
-			if (action) {
-				event["eventAction"] = action;
-			}
-			if (label) {
-				event["eventLabel"] = label;
-			}
-			if (value) {
-				event["eventValue"] = value;
-			}
-			if (noninteraction) {
-				event["nonInteraction"] = noninteraction;
+			//category, action, label, value, noninteraction, $target
+			var url;
+
+			if($target) {
+				url = $target.attr("href");
+			}else{
+				url = '';
 			}
 
-			if (typeof $target !== "undefined") {
-				var href = (typeof $target[0].href !== "undefined") ? $target[0].href : "",
-				    url = (href.indexOf(":") < 0) ? window.location.protocol + "//" + window.location.hostname + "/" + href : href;
+			var category = data[0],
+			    action = data[1],
+			    label = data[2] || url,
+			    value = data[3],
+			    noninteraction = data[4];
 
-				if (href !== "") {
-					// Check window target
-					if ($target.attr("target")) {
-						window.open(url, $target.attr("target"));
-					} else {
-						event["hitCallback"] = function() {
-							document.location = url;
-						};
+
+			if (typeof window.ga === "function") {
+				var event = {
+					"hitType": "event",
+					"location": String(window.location),
+					"title": String(window.document.title)
+				};
+
+				if (category) {
+					event["eventCategory"] = category;
+				}
+
+				if (action) {
+					event["eventAction"] = action;
+				}
+
+				if (label) {
+					event["eventLabel"] = label;
+				}
+
+				if (value) {
+					event["eventValue"] = value;
+				}
+
+				if (noninteraction) {
+					event["nonInteraction"] = noninteraction;
+				}
+
+				if (typeof $target !== "undefined") {
+					var href = (typeof $target[0].href !== "undefined") ? $target[0].href : "",
+					    url = (href.indexOf(":") < 0) ? window.location.protocol + "//" + window.location.hostname + "/" + href : href;
+
+					if (href !== "") {
+						// Check window target
+						if ($target.attr("target")) {
+							window.open(url, $target.attr("target"));
+						} else {
+							event["hitCallback"] = function() {
+								document.location = url;
+							};
+						}
 					}
 				}
+
+				DEBUG && console.info(event);
+
+				//window.ga("send", event);
 			}
-
-			DEBUG && console.info(event);
-
-			window.ga("send", event);
 		}
 	}
 
-	$.ace = function() {
-		if (arguments.length && typeof arguments[0] !== "object") {
-			console.log('manual track')
-			_push.apply(this, arguments);
-		} else {
-			_init.apply(this, arguments);
-		}
+	var myAce = new Ace("*[data-track-event]");
+
+	$.ace = function (options) {
+		var data = myAce.getData(options);
+		myAce.push(data);
+	}
+
+	$.fn.ace = function (options) {
+		return this.each(function () {
+				myAce.attach(this, options );
+		});
 	};
 
-	$.ace.extensions = {};
 
-} (DELPHIC = window.DELPHIC || {}, window.jQuery || window.Zepto));
+
+} (DELPHIC = window.DELPHIC || {}, window.jQuery));
