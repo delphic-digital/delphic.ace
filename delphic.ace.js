@@ -126,7 +126,7 @@
 
 				DEBUG && console.info(event);
 
-				//window.ga("send", event);
+				window.ga("send", event);
 			}
 		}
 	}
